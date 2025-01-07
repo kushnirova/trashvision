@@ -44,10 +44,14 @@ class LabelingForTV:
 
         self.root.bind("<Left>", self.previous_image)
         self.root.bind("<Right>", self.next_image)
+        self.root.bind("1", lambda e: self.selected_category.set("Plastik"))
+        self.root.bind("2", lambda e: self.selected_category.set("Metal"))
+        self.root.bind("3", lambda e: self.selected_category.set("Szkło"))
+        self.root.bind("4", lambda e: self.selected_category.set("Papier"))
         self.canvas.bind("<Button-1>", self.start_draw)
         self.canvas.bind("<B1-Motion>", self.draw_rectangle)
         self.canvas.bind("<ButtonRelease-1>", self.finish_rectangle)
-
+        self.root.bind("<Delete>", self.delete_object)
         self.load_image()
 
     def load_image(self):
@@ -158,7 +162,7 @@ class LabelingForTV:
             self.obj_listbox.insert(selected_index, f"#{object_id} śmieć - {new_category.lower()}")
             self.canvas.itemconfig(self.objects[selected_index][0], outline=self.get_category_color(new_category))
 
-    def delete_object(self):
+    def delete_object(self, event=None):
         selected_index = self.obj_listbox.curselection()
         if selected_index:
             selected_index = selected_index[0]
