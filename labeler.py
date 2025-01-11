@@ -63,11 +63,22 @@ class LabelingForTV:
         self.canvas.bind("<Button-1>", self.start_draw)
         self.canvas.bind("<B1-Motion>", self.draw_rectangle)
         self.canvas.bind("<ButtonRelease-1>", self.finish_rectangle)
-        self.root.bind("<Delete>", self.delete_object)
-        
+        self.root.bind("<Delete>", self.delete_object)        
         # Załaduj pierwsze zdjęcie
         self.load_image()
+        
+        
+        
+        
+        
 
+    def update_cursor_lines(self, event):
+        """Aktualizuje pozycje linii kursora."""
+        x, y = event.x, event.y
+        self.canvas.coords(self.cursor_v_line, x, 0, x, self.canvas_height)
+        self.canvas.coords(self.cursor_h_line, 0, y, self.canvas_width, y)
+
+    
     def load_image(self):
         """Ładuje i wyświetla bieżący obraz, wczytuje prostokąty z pliku .txt."""
         if not self.images:
@@ -94,6 +105,10 @@ class LabelingForTV:
             self.load_labels(image_path)
         except Exception as e:
             print(f"Nie można załadować obrazu {image_path}: {e}")
+        self.cursor_v_line = self.canvas.create_line(0, 0, 0, self.canvas_height, fill="white", dash=(4, 2))
+        self.cursor_h_line = self.canvas.create_line(0, 0, self.canvas_width, 0, fill="white", dash=(4, 2))
+        self.canvas.bind("<Motion>", self.update_cursor_lines)
+        self.canvas.config(cursor="none")
 
     def save_labels(self, image_path):
         """Zapisuje obiekty do pliku .txt."""
@@ -153,6 +168,7 @@ class LabelingForTV:
         """Rysuje prostokąt w trakcie przeciągania."""
         if self.current_object:
             self.canvas.coords(self.current_object, self.start_x, self.start_y, event.x, event.y)
+            self.update_cursor_lines(event)
 
     def finish_rectangle(self, event):
         """Kończy rysowanie prostokąta i przypisuje kategorię."""
